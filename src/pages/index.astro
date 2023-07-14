@@ -1,11 +1,70 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Guitarra from '../components/Guitarra.astro';
+import Post from '../components/Post.astro';
+import Curso from '../components/Curso.astro';
+import ComponenteReact from '../components/ComponenteReact'
+
+const urlGuitarras = `${import.meta.env.PUBLIC_API_URL}/guitarras`
+const urlBlog = `${import.meta.env.PUBLIC_API_URL}/posts`
+const urlCurso = `${import.meta.env.PUBLIC_API_URL}/curso`
+
+const [ resGuitarras, resBlog, resCurso ] = await Promise.all([
+	fetch(urlGuitarras),
+	fetch(urlBlog),
+	fetch(urlCurso)
+])
+
+const [ guitarras, posts, curso] = await Promise.all([
+	resGuitarras.json(),
+	resBlog.json(),
+	resCurso.json()
+])
+
 ---
 
 <Layout title="Inicio" description="Página de tienda de instrumentos musicales, guitarras, cursos, blog y más">
 	<main class="contenedor">
-		<h1 class="heading">INICIO</h1>
+		<h1 class="heading">Nuestra Colección</h1>
+
+		<div class="grid">
+			{guitarras?.map( guitarra => (
+				<Guitarra
+					nombre={guitarra.nombre}
+					descripcion={guitarra.descripcion}
+					url={guitarra.url}
+					precio={guitarra.precio}
+					imagen={guitarra.imagen.formats.medium.url}
+				/>
+			))}
+		</div>
 	</main>
+
+	<Curso
+		titulo={curso.titulo}
+		contenido={curso.contenido}
+		imagen={curso.imagen.url}
+	/>
+
+	<ComponenteReact
+	
+	/>
+
+	<section class="contenedor">
+		<h2 class="heading">Blog</h2>
+
+		<div class="grid">
+			{posts?.map(post =>(
+				<Post
+					titulo={post.titulo}
+					published_at={post.published_at}
+					contenido={post.contenido}
+					imagen={post.imagen.formats.medium.url}
+					url={post.url}
+				/>
+			))}
+		</div>
+	</section>
 </Layout>
 
 <style>
